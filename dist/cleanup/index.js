@@ -88355,11 +88355,12 @@ exports.isCacheFeatureAvailable = isCacheFeatureAvailable;
 function getVersionFromFileContent(content, distributionName, versionFile) {
     var _a, _b, _c, _d, _e;
     let javaVersionRegExp;
-    if (versionFile == '.tool-versions') {
+    const extension = path_1.default.extname(versionFile);
+    if (extension == '.tool-versions') {
         javaVersionRegExp =
             /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m;
     }
-    else if (versionFile == '*.java-version') {
+    else if (extension == '*.java-version') {
         javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
     }
     else {
