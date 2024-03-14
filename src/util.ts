@@ -122,7 +122,7 @@ export function getVersionFromFileContent(
   if (versionFile == '.tool-versions') {
     javaVersionRegExp =
       /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m;
-  } else if (versionFile == '.java-version') {
+  } else if (versionFile == '*.java-version') {
     javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
   } else {
     throw new Error('Invalid version file');
