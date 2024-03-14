@@ -119,12 +119,11 @@ export function getVersionFromFileContent(
   versionFile: string
 ): string | null {
   let javaVersionRegExp: RegExp;
-  const extension = path.extname(versionFile);
 
-  if (extension == 'tool-versions') {
+  if (versionFile == '.tool-versions') {
     javaVersionRegExp =
       /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m;
-  } else if (extension == 'java-version') {
+  } else if (versionFile == '.java-version') {
     javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
   } else {
     throw new Error('Invalid version file');
