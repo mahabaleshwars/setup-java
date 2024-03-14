@@ -121,10 +121,10 @@ export function getVersionFromFileContent(
   let javaVersionRegExp: RegExp;
   const extension = path.extname(versionFile);
 
-  if (extension == '.tool-versions') {
+  if (extension == 'tool-versions') {
     javaVersionRegExp =
       /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m;
-  } else if (extension == '.java-version') {
+  } else if (extension == 'java-version') {
     javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
   } else {
     throw new Error('Invalid version file');
