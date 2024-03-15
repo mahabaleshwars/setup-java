@@ -9,19 +9,20 @@ import * as tc from '@actions/tool-cache';
 import {INPUT_JOB_STATUS, DISTRIBUTIONS_ONLY_MAJOR_VERSION} from './constants';
 import {OutgoingHttpHeaders} from 'http';
 
-export function getTempDir() {
-  const tempDirectory = process.env['RUNNER_TEMP'] || os.tmpdir();
-
-  return tempDirectory;
+export function getTempDir(): string {
+  return process.env['RUNNER_TEMP'] || os.tmpdir();
 }
 
-export function getBooleanInput(inputName: string, defaultValue = false) {
+export function getBooleanInput(
+  inputName: string,
+  defaultValue = false
+): boolean {
   return (
     (core.getInput(inputName) || String(defaultValue)).toUpperCase() === 'TRUE'
   );
 }
 
-export function getVersionFromToolcachePath(toolPath: string) {
+export function getVersionFromToolcachePath(toolPath: string): string {
   if (toolPath) {
     return path.basename(path.dirname(toolPath));
   }
@@ -30,14 +31,9 @@ export function getVersionFromToolcachePath(toolPath: string) {
 }
 
 export async function extractJdkFile(toolPath: string, extension?: string) {
-  if (!extension) {
-    extension = toolPath.endsWith('.tar.gz')
-      ? 'tar.gz'
-      : path.extname(toolPath);
-    if (extension.startsWith('.')) {
-      extension = extension.substring(1);
-    }
-  }
+  extension ||= toolPath.endsWith('.tar.gz')
+    ? 'tar.gz'
+    : path.extname(toolPath).substring(1);
 
   switch (extension) {
     case 'tar.gz':
@@ -50,7 +46,7 @@ export async function extractJdkFile(toolPath: string, extension?: string) {
   }
 }
 
-export function getDownloadArchiveExtension() {
+export function getDownloadArchiveExtension(): string {
   return process.platform === 'win32' ? 'zip' : 'tar.gz';
 }
 
@@ -72,45 +68,33 @@ export function getToolcachePath(
   toolName: string,
   version: string,
   architecture: string
-) {
+): string | null {
   const toolcacheRoot = process.env['RUNNER_TOOL_CACHE'] ?? '';
   const fullPath = path.join(toolcacheRoot, toolName, version, architecture);
-  if (fs.existsSync(fullPath)) {
-    return fullPath;
-  }
-
-  return null;
+  return fs.existsSync(fullPath) ? fullPath : null;
 }
 
-export function isJobStatusSuccess() {
-  const jobStatus = core.getInput(INPUT_JOB_STATUS);
-
-  return jobStatus === 'success';
+export function isJobStatusSuccess(): boolean {
+  return core.getInput(INPUT_JOB_STATUS) === 'success';
 }
 
 export function isGhes(): boolean {
-  const ghUrl = new URL(
-    process.env['GITHUB_SERVER_URL'] || 'https://github.com'
+  return (
+    new URL(
+      process.env['GITHUB_SERVER_URL'] || 'https://github.com'
+    ).hostname.toUpperCase() !== 'GITHUB.COM'
   );
-  return ghUrl.hostname.toUpperCase() !== 'GITHUB.COM';
 }
 
 export function isCacheFeatureAvailable(): boolean {
-  if (cache.isFeatureAvailable()) {
-    return true;
-  }
-
-  if (isGhes()) {
+  if (!cache.isFeatureAvailable()) {
     core.warning(
-      'Caching is only supported on GHES version >= 3.5. If you are on a version >= 3.5, please check with your GHES admin if the Actions cache service is enabled or not.'
+      isGhes()
+        ? 'Caching is only supported on GHES version >= 3.5. If you are on a version >= 3.5, please check with your GHES admin if the Actions cache service is enabled or not.'
+        : 'The runner was not able to contact the cache service. Caching will be skipped'
     );
-    return false;
   }
-
-  core.warning(
-    'The runner was not able to contact the cache service. Caching will be skipped'
-  );
-  return false;
+  return cache.isFeatureAvailable();
 }
 
 export function getVersionFromFileContent(
@@ -118,19 +102,15 @@ export function getVersionFromFileContent(
   distributionName: string,
   versionFile: string
 ): string | null {
-  let javaVersionRegExp: RegExp;
-
   function getFileName(versionFile: string) {
     return path.basename(versionFile);
   }
 
   const versionFileName = getFileName(versionFile);
-  if (versionFileName == '.tool-versions') {
-    javaVersionRegExp =
-      /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m;
-  } else {
-    javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
-  }
+  const javaVersionRegExp =
+    versionFileName === '.tool-versions'
+      ? /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m
+      : /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
 
   const fileContent = content.match(javaVersionRegExp)?.groups?.version
     ? (content.match(javaVersionRegExp)?.groups?.version as string)
@@ -147,12 +127,9 @@ export function getVersionFromFileContent(
   let version = semver.validRange(rawVersion)
     ? tentativeVersion
     : semver.coerce(tentativeVersion);
-
   core.debug(`Range version from file is '${version}'`);
 
-  if (!version) {
-    return null;
-  }
+  if (!version) return null;
 
   if (DISTRIBUTIONS_ONLY_MAJOR_VERSION.includes(distributionName)) {
     const coerceVersion = semver.coerce(version) ?? version;
@@ -167,26 +144,25 @@ function avoidOldNotation(content: string): string {
   return content.startsWith('1.') ? content.substring(2) : content;
 }
 
-export function convertVersionToSemver(version: number[] | string) {
+export function convertVersionToSemver(version: number[] | string): string {
   // Some distributions may use semver-like notation (12.10.2.1, 12.10.2.1.1)
   const versionArray = Array.isArray(version) ? version : version.split('.');
   const mainVersion = versionArray.slice(0, 3).join('.');
-  if (versionArray.length > 3) {
-    return `${mainVersion}+${versionArray.slice(3).join('.')}`;
-  }
-  return mainVersion;
+
+  return versionArray.length > 3
+    ? `${mainVersion}+${versionArray.slice(3).join('.')}`
+    : mainVersion;
 }
 
 export function getGitHubHttpHeaders(): OutgoingHttpHeaders {
   const token = core.getInput('token');
-  const auth = !token ? undefined : `token ${token}`;
+  const auth = token ? `token ${token}` : undefined;
 
   const headers: OutgoingHttpHeaders = {
     accept: 'application/vnd.github.VERSION.raw'
   };
 
-  if (auth) {
-    headers.authorization = auth;
-  }
+  if (auth) headers.authorization = auth;
+
   return headers;
 }

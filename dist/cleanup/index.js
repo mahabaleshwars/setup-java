@@ -88265,8 +88265,7 @@ const core = __importStar(__nccwpck_require__(2186));
 const tc = __importStar(__nccwpck_require__(7784));
 const constants_1 = __nccwpck_require__(9042);
 function getTempDir() {
-    const tempDirectory = process.env['RUNNER_TEMP'] || os_1.default.tmpdir();
-    return tempDirectory;
+    return process.env['RUNNER_TEMP'] || os_1.default.tmpdir();
 }
 exports.getTempDir = getTempDir;
 function getBooleanInput(inputName, defaultValue = false) {
@@ -88282,14 +88281,9 @@ function getVersionFromToolcachePath(toolPath) {
 exports.getVersionFromToolcachePath = getVersionFromToolcachePath;
 function extractJdkFile(toolPath, extension) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (!extension) {
-            extension = toolPath.endsWith('.tar.gz')
-                ? 'tar.gz'
-                : path_1.default.extname(toolPath);
-            if (extension.startsWith('.')) {
-                extension = extension.substring(1);
-            }
-        }
+        extension || (extension = toolPath.endsWith('.tar.gz')
+            ? 'tar.gz'
+            : path_1.default.extname(toolPath).substring(1));
         switch (extension) {
             case 'tar.gz':
             case 'tar':
@@ -88324,48 +88318,35 @@ function getToolcachePath(toolName, version, architecture) {
     var _a;
     const toolcacheRoot = (_a = process.env['RUNNER_TOOL_CACHE']) !== null && _a !== void 0 ? _a : '';
     const fullPath = path_1.default.join(toolcacheRoot, toolName, version, architecture);
-    if (fs.existsSync(fullPath)) {
-        return fullPath;
-    }
-    return null;
+    return fs.existsSync(fullPath) ? fullPath : null;
 }
 exports.getToolcachePath = getToolcachePath;
 function isJobStatusSuccess() {
-    const jobStatus = core.getInput(constants_1.INPUT_JOB_STATUS);
-    return jobStatus === 'success';
+    return core.getInput(constants_1.INPUT_JOB_STATUS) === 'success';
 }
 exports.isJobStatusSuccess = isJobStatusSuccess;
 function isGhes() {
-    const ghUrl = new URL(process.env['GITHUB_SERVER_URL'] || 'https://github.com');
-    return ghUrl.hostname.toUpperCase() !== 'GITHUB.COM';
+    return (new URL(process.env['GITHUB_SERVER_URL'] || 'https://github.com').hostname.toUpperCase() !== 'GITHUB.COM');
 }
 exports.isGhes = isGhes;
 function isCacheFeatureAvailable() {
-    if (cache.isFeatureAvailable()) {
-        return true;
+    if (!cache.isFeatureAvailable()) {
+        core.warning(isGhes()
+            ? 'Caching is only supported on GHES version >= 3.5. If you are on a version >= 3.5, please check with your GHES admin if the Actions cache service is enabled or not.'
+            : 'The runner was not able to contact the cache service. Caching will be skipped');
     }
-    if (isGhes()) {
-        core.warning('Caching is only supported on GHES version >= 3.5. If you are on a version >= 3.5, please check with your GHES admin if the Actions cache service is enabled or not.');
-        return false;
-    }
-    core.warning('The runner was not able to contact the cache service. Caching will be skipped');
-    return false;
+    return cache.isFeatureAvailable();
 }
 exports.isCacheFeatureAvailable = isCacheFeatureAvailable;
 function getVersionFromFileContent(content, distributionName, versionFile) {
     var _a, _b, _c, _d, _e;
-    let javaVersionRegExp;
     function getFileName(versionFile) {
         return path_1.default.basename(versionFile);
     }
     const versionFileName = getFileName(versionFile);
-    if (versionFileName == '.tool-versions') {
-        javaVersionRegExp =
-            /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m;
-    }
-    else {
-        javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
-    }
+    const javaVersionRegExp = versionFileName === '.tool-versions'
+        ? /^(java\s+)(?:\S*-)?v?(?<version>(\d+)(\.\d+)?(\.\d+)?(\+\d+)?(-ea(\.\d+)?)?)$/m
+        : /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
     const fileContent = ((_b = (_a = content.match(javaVersionRegExp)) === null || _a === void 0 ? void 0 : _a.groups) === null || _b === void 0 ? void 0 : _b.version)
         ? (_d = (_c = content.match(javaVersionRegExp)) === null || _c === void 0 ? void 0 : _c.groups) === null || _d === void 0 ? void 0 : _d.version
         : '';
@@ -88379,9 +88360,8 @@ function getVersionFromFileContent(content, distributionName, versionFile) {
         ? tentativeVersion
         : semver.coerce(tentativeVersion);
     core.debug(`Range version from file is '${version}'`);
-    if (!version) {
+    if (!version)
         return null;
-    }
     if (constants_1.DISTRIBUTIONS_ONLY_MAJOR_VERSION.includes(distributionName)) {
         const coerceVersion = (_e = semver.coerce(version)) !== null && _e !== void 0 ? _e : version;
         version = semver.major(coerceVersion).toString();
@@ -88397,21 +88377,19 @@ function convertVersionToSemver(version) {
     // Some distributions may use semver-like notation (12.10.2.1, 12.10.2.1.1)
     const versionArray = Array.isArray(version) ? version : version.split('.');
     const mainVersion = versionArray.slice(0, 3).join('.');
-    if (versionArray.length > 3) {
-        return `${mainVersion}+${versionArray.slice(3).join('.')}`;
-    }
-    return mainVersion;
+    return versionArray.length > 3
+        ? `${mainVersion}+${versionArray.slice(3).join('.')}`
+        : mainVersion;
 }
 exports.convertVersionToSemver = convertVersionToSemver;
 function getGitHubHttpHeaders() {
     const token = core.getInput('token');
-    const auth = !token ? undefined : `token ${token}`;
+    const auth = token ? `token ${token}` : undefined;
     const headers = {
         accept: 'application/vnd.github.VERSION.raw'
     };
-    if (auth) {
+    if (auth)
         headers.authorization = auth;
-    }
     return headers;
 }
 exports.getGitHubHttpHeaders = getGitHubHttpHeaders;
