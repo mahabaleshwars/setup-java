@@ -23,6 +23,19 @@ export class GraalVMDistribution extends JavaBase {
   protected async downloadTool(
     javaRelease: JavaDownloadRelease
   ): Promise<JavaInstallerResults> {
+    const version = this.getToolcacheVersionName(javaRelease.version);
+    const cachedJavaPath = tc.find(
+      this.toolcacheFolderName,
+      version,
+      this.architecture
+    );
+
+    if (cachedJavaPath) {
+      core.info(
+        `Found cached Java ${javaRelease.version} (${this.distribution}) at ${cachedJavaPath}`
+      );
+      return {version: javaRelease.version, path: cachedJavaPath};
+    }
     core.info(
       `Downloading Java ${javaRelease.version} (${this.distribution}) from ${javaRelease.url} ...`
     );
@@ -35,7 +48,6 @@ export class GraalVMDistribution extends JavaBase {
 
     const archiveName = fs.readdirSync(extractedJavaPath)[0];
     const archivePath = path.join(extractedJavaPath, archiveName);
-    const version = this.getToolcacheVersionName(javaRelease.version);
 
     const javaPath = await tc.cacheDir(
       archivePath,
@@ -43,7 +55,7 @@ export class GraalVMDistribution extends JavaBase {
       version,
       this.architecture
     );
-
+    core.info('Java archive extracted successfully');
     return {version: javaRelease.version, path: javaPath};
   }
 
