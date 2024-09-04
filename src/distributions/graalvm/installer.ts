@@ -38,28 +38,35 @@ export class GraalVMDistribution extends JavaBase {
       );
       return {version: javaRelease.version, path: cachedJavaPath};
     }
+
     core.info(
       `Downloading Java ${javaRelease.version} (${this.distribution}) from ${javaRelease.url} ...`
     );
+
+    const startDownload = Date.now();
     const javaArchivePath = await tc.downloadTool(javaRelease.url);
+    const endDownload = Date.now();
+    core.info(
+      `Download completed in ${(endDownload - startDownload) / 1000} seconds`
+    );
 
     core.info(`Extracting Java archive...`);
 
+    const startExtraction = Date.now();
     const extension = getDownloadArchiveExtension();
     core.info(`extension: ${extension}`);
     const extractedJavaPath = await extractJdkFile(javaArchivePath, extension);
-
-    const archiveName = fs.readdirSync(extractedJavaPath)[0];
-    const archivePath = path.join(extractedJavaPath, archiveName);
-    core.info(`archivePath: ${archivePath}`);
-    const javaPath = await tc.cacheDir(
-      archivePath,
-      this.toolcacheFolderName,
-      version,
-      this.architecture
+    const endExtraction = Date.now();
+    core.info(
+      `Extraction completed in ${
+        (endExtraction - startExtraction) / 1000
+      } seconds`
     );
-    core.info('Java archive extracted successfully');
-    return {version: javaRelease.version, path: javaPath};
+
+    core.info(
+      `Java ${javaRelease.version} (${this.distribution}) has been installed at ${extractedJavaPath}`
+    );
+    return {version: javaRelease.version, path: extractedJavaPath};
   }
 
   protected async findPackageForDownload(
