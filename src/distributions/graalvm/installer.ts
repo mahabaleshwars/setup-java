@@ -24,11 +24,13 @@ export class GraalVMDistribution extends JavaBase {
     javaRelease: JavaDownloadRelease
   ): Promise<JavaInstallerResults> {
     const version = this.getToolcacheVersionName(javaRelease.version);
+    core.info('version: ' + version);
     const cachedJavaPath = tc.find(
       this.toolcacheFolderName,
       version,
       this.architecture
     );
+    core.info('After cachedJavaPath');
 
     if (cachedJavaPath) {
       core.info(
