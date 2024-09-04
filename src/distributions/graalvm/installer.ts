@@ -44,13 +44,14 @@ export class GraalVMDistribution extends JavaBase {
     const javaArchivePath = await tc.downloadTool(javaRelease.url);
 
     core.info(`Extracting Java archive...`);
-    const extension = getDownloadArchiveExtension();
 
+    const extension = getDownloadArchiveExtension();
+    core.info(`extension: ${extension}`);
     const extractedJavaPath = await extractJdkFile(javaArchivePath, extension);
 
     const archiveName = fs.readdirSync(extractedJavaPath)[0];
     const archivePath = path.join(extractedJavaPath, archiveName);
-
+    core.info(`archivePath: ${archivePath}`);
     const javaPath = await tc.cacheDir(
       archivePath,
       this.toolcacheFolderName,
