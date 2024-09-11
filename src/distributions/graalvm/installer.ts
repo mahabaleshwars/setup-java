@@ -23,38 +23,35 @@ export class GraalVMDistribution extends JavaBase {
   protected async downloadTool(
     javaRelease: JavaDownloadRelease
   ): Promise<JavaInstallerResults> {
-    try {
-      core.info(
-        `Downloading Java ${javaRelease.version} (${this.distribution}) from ${javaRelease.url} ...`
-      );
-      const javaArchivePath = await tc.downloadTool(javaRelease.url);
+    // try {
+    core.info(
+      `Downloading Java ${javaRelease.version} (${this.distribution}) from ${javaRelease.url} ...`
+    );
+    const javaArchivePath = await tc.downloadTool(javaRelease.url);
 
-      core.info(`Extracting Java archive...`);
-      const extension = getDownloadArchiveExtension();
+    core.info(`Extracting Java archive...`);
+    const extension = getDownloadArchiveExtension();
 
-      const extractedJavaPath = await extractJdkFile(
-        javaArchivePath,
-        extension
-      );
+    const extractedJavaPath = await extractJdkFile(javaArchivePath, extension);
 
-      const archiveName = fs.readdirSync(extractedJavaPath)[0];
-      const archivePath = path.join(extractedJavaPath, archiveName);
-      const version = this.getToolcacheVersionName(javaRelease.version);
+    const archiveName = fs.readdirSync(extractedJavaPath)[0];
+    const archivePath = path.join(extractedJavaPath, archiveName);
+    const version = this.getToolcacheVersionName(javaRelease.version);
 
-      const javaPath = await tc.cacheDir(
-        archivePath,
-        this.toolcacheFolderName,
-        version,
-        this.architecture
-      );
+    const javaPath = await tc.cacheDir(
+      archivePath,
+      this.toolcacheFolderName,
+      version,
+      this.architecture
+    );
 
-      return {version: javaRelease.version, path: javaPath};
-    } catch (error) {
-      core.setFailed(
-        `Failed to download or extract Java: ${(error as Error).message}`
-      );
-      throw error;
-    }
+    return {version: javaRelease.version, path: javaPath};
+    // } catch (error) {
+    //   core.setFailed(
+    //     `Failed to download or extract Java: ${(error as Error).message}`
+    //   );
+    //   throw error;
+    // }
   }
 
   protected async findPackageForDownload(
