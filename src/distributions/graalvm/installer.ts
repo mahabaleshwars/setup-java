@@ -23,50 +23,38 @@ export class GraalVMDistribution extends JavaBase {
   protected async downloadTool(
     javaRelease: JavaDownloadRelease
   ): Promise<JavaInstallerResults> {
-    const version = this.getToolcacheVersionName(javaRelease.version);
-    core.info('version: ' + version);
-    const cachedJavaPath = tc.find(
-      this.toolcacheFolderName,
-      version,
-      this.architecture
-    );
-    core.info('After cachedJavaPath');
-
-    if (cachedJavaPath) {
+    try {
       core.info(
-        `Found cached Java ${javaRelease.version} (${this.distribution}) at ${cachedJavaPath}`
+        `Downloading Java ${javaRelease.version} (${this.distribution}) from ${javaRelease.url} ...`
       );
-      return {version: javaRelease.version, path: cachedJavaPath};
+      const javaArchivePath = await tc.downloadTool(javaRelease.url);
+
+      core.info(`Extracting Java archive...`);
+      const extension = getDownloadArchiveExtension();
+
+      const extractedJavaPath = await extractJdkFile(
+        javaArchivePath,
+        extension
+      );
+
+      const archiveName = fs.readdirSync(extractedJavaPath)[0];
+      const archivePath = path.join(extractedJavaPath, archiveName);
+      const version = this.getToolcacheVersionName(javaRelease.version);
+
+      const javaPath = await tc.cacheDir(
+        archivePath,
+        this.toolcacheFolderName,
+        version,
+        this.architecture
+      );
+
+      return {version: javaRelease.version, path: javaPath};
+    } catch (error) {
+      core.setFailed(
+        `Failed to download or extract Java: ${(error as Error).message}`
+      );
+      throw error;
     }
-
-    core.info(
-      `Downloading Java ${javaRelease.version} (${this.distribution}) from ${javaRelease.url} ...`
-    );
-
-    const startDownload = Date.now();
-    const javaArchivePath = await tc.downloadTool(javaRelease.url);
-    const endDownload = Date.now();
-    core.info(
-      `Download completed in ${(endDownload - startDownload) / 1000} seconds`
-    );
-
-    core.info(`Extracting Java archive...`);
-
-    const startExtraction = Date.now();
-    const extension = getDownloadArchiveExtension();
-    core.info(`extension: ${extension}`);
-    const extractedJavaPath = await extractJdkFile(javaArchivePath, extension);
-    const endExtraction = Date.now();
-    core.info(
-      `Extraction completed in ${
-        (endExtraction - startExtraction) / 1000
-      } seconds`
-    );
-
-    core.info(
-      `Java ${javaRelease.version} (${this.distribution}) has been installed at ${extractedJavaPath}`
-    );
-    return {version: javaRelease.version, path: extractedJavaPath};
   }
 
   protected async findPackageForDownload(
@@ -116,7 +104,7 @@ export class GraalVMDistribution extends JavaBase {
     return {url: fileUrl, version: range};
   }
 
-  public getPlatform(platform: NodeJS.Platform = process.platform): OsVersions {
+  public getPlatform(platform: NodeJS.Platform = process.platform): string {
     switch (platform) {
       case 'darwin':
         return 'macos';
