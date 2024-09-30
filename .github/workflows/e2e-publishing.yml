@@ -1,15 +1,7 @@
 name: Validate publishing functionality
 
 on:
-  push:
-    branches:
-      - main
-      - releases/*
-    paths-ignore:
-      - '**.md'
-  pull_request:
-    paths-ignore:
-      - '**.md'
+ workflow_dispatch:
 
 defaults:
   run:
