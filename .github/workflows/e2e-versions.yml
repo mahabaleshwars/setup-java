@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: [
             'temurin',
             'adopt',
@@ -81,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['temurin', 'zulu', 'liberica']
         version:
           - '11.0'
@@ -123,7 +123,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution:
           ['temurin', 'zulu', 'liberica', 'dragonwell', 'sapmachine']
         exclude:
@@ -150,7 +150,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution:
           ['temurin', 'zulu', 'liberica', 'dragonwell', 'sapmachine']
         exclude:
@@ -191,7 +191,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         version: ['17-ea', '15.0.0-ea.14']
     steps:
       - name: Checkout
@@ -213,7 +213,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         version: ['17-ea']
     steps:
       - name: Checkout
@@ -235,7 +235,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         version: ['17-ea', '21-ea']
     steps:
       - name: Checkout
@@ -257,7 +257,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['temurin', 'zulu', 'liberica', 'semeru', 'sapmachine']
         java-package: ['jre']
         version: ['17.0']
@@ -305,7 +305,7 @@ jobs:
       fail-fast: false
       matrix:
         # x86 is not supported on macOS
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['liberica', 'zulu', 'corretto']
         version: ['11']
     steps:
@@ -328,7 +328,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['temurin', 'microsoft', 'corretto']
         java-version-file: ['.java-version', '.tool-versions']
     steps:
@@ -357,7 +357,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['temurin', 'zulu', 'liberica', 'microsoft', 'corretto']
         java-version-file: ['.java-version', '.tool-versions']
     steps:
@@ -385,7 +385,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['adopt', 'adopt-openj9', 'zulu']
         java-version-file: ['.java-version', '.tool-versions']
     steps:
@@ -413,7 +413,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-latest, ubuntu-24.04, windows-latest, macos-13, macos-14]
         distribution: ['adopt', 'zulu', 'liberica']
         java-version-file: ['.java-version', '.tool-versions']
     steps:
