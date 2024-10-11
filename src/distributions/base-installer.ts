@@ -73,7 +73,11 @@ export abstract class JavaBase {
 
     core.info(`Setting Java ${foundJava.version} as the default`);
     this.setJavaDefault(foundJava.version, foundJava.path);
-
+    core.info(
+      'java home' +
+        `JAVA_HOME_${foundJava.version}_${this.architecture.toUpperCase()}`
+    );
+    core.info('tool path' + foundJava.path);
     return foundJava;
   }
 
@@ -171,6 +175,10 @@ export abstract class JavaBase {
     core.exportVariable(
       `JAVA_HOME_${majorVersion}_${this.architecture.toUpperCase()}`,
       toolPath
+    );
+    core.info(
+      'assigned toolpath' +
+        `JAVA_HOME_${majorVersion}_${this.architecture.toUpperCase()}`
     );
   }
 
