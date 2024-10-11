@@ -177,7 +177,7 @@ export abstract class JavaBase {
       toolPath
     );
     core.info(
-      'assigned toolpath' +
+      'assigned toolpath: ' +
         `JAVA_HOME_${majorVersion}_${this.architecture.toUpperCase()}`
     );
   }
