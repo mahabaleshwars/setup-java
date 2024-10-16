@@ -173,12 +173,12 @@ export abstract class JavaBase {
     core.setOutput('path', toolPath);
     core.setOutput('version', version);
     core.exportVariable(
-      `JAVA_HOME_${majorVersion}_${this.architecture.toUpperCase()}`,
+      `JAVA_HOME_${majorVersion}_${this.distributionArchitecture().toUpperCase()}`,
       toolPath
     );
     core.info(
       'assigned toolpath: ' +
-        `JAVA_HOME_${majorVersion}_${this.architecture.toUpperCase()}`
+        `JAVA_HOME_${majorVersion}_${this.distributionArchitecture().toUpperCase()}`
     );
   }
 
