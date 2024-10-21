@@ -59,9 +59,12 @@ export class CorrettoDistribution extends JavaBase {
     if (!this.stable) {
       throw new Error('Early access versions are not supported');
     }
-    if (version.includes('.')) {
-      throw new Error('Only major versions are supported');
+    if (this.packageType !== 'jdk') {
+      throw new Error('Dragonwell provides only the `jdk` package type');
     }
+    // if (version.includes('.')) {
+    //   throw new Error('Only major versions are supported');
+    // }
     const availableVersions = await this.getAvailableVersions();
     const matchingVersions = availableVersions
       .filter(item => item.version == version)
