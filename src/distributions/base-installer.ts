@@ -125,6 +125,8 @@ export abstract class JavaBase {
       })
       .filter(item => item.stable === this.stable);
 
+      core.info('Available versions: ' + availableVersions.map(v => v.version).join(', '));
+
     const satisfiedVersions = availableVersions
       .filter(item => isVersionSatisfies(this.version, item.version))
       .filter(item => item.path)
