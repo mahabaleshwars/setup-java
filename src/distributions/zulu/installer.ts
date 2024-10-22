@@ -36,6 +36,16 @@ export class ZuluDistribution extends JavaBase {
         zuluVersion: convertVersionToSemver(item.zulu_version)
       };
     });
+    core.info(
+      `Available versions: ${availableVersions.map(v => v.version).join(', ')}`
+    );
+    core.info(
+      'Version  check: ' +
+        availableVersions
+          .filter(v => v.version == version)
+          .map(v => v.version)
+          .toString()
+    );
 
     const satisfiedVersions = availableVersions
       .filter(item => isVersionSatisfies(version, item.version))
