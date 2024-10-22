@@ -108,8 +108,10 @@ export abstract class JavaBase {
     core.debug(' Looking for Java in tool-cache folder: '+ this.toolcacheFolderName);
     core.debug(' Looking for Java in tool-cache arch: '+ this.architecture);
     let test = path.join( this.tcl, this.toolcacheFolderName);
+    const children: string[] = fs.readdirSync(test);
+
     core.debug(' tool cache: '+  test);
-    core.debug ('tool cache files '+ fs.readdirSync(test));
+    core.debug ('tool cache files '+ children);
     core.debug(' test available versions:  '+ tc.findAllVersions(this.toolcacheFolderName, this.architecture));
     const availableVersions = tc
   .findAllVersions(this.toolcacheFolderName, this.architecture)
