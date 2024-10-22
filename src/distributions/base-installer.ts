@@ -113,8 +113,9 @@ export abstract class JavaBase {
       .replace(/-ea$/, '')
       .replace('-', '+');
     const path = getToolcachePath(this.toolcacheFolderName, item, this.architecture) || '';
+    core.debug(`Found version: ${version}, path: ${path}`);
     const stable = !item.includes('-ea');
-
+    core.debug(`Stable: ${stable}`);
     return {
       version,
       path,
@@ -123,7 +124,7 @@ export abstract class JavaBase {
   })
   .filter(item => {
     const isStableMatch = item.stable === this.stable;
-    console.log(`Filtering Version: ${item.version}, Stable Match: ${isStableMatch}`);
+    console.debug(`Filtering Version: ${item.version}, Stable Match: ${isStableMatch}`);
     return isStableMatch;
   });
 
