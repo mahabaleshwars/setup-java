@@ -124,8 +124,8 @@ export abstract class JavaBase {
             ) || '',
           stable: !item.includes('-ea')
         };
-      })
-      .filter(item => item.stable === this.stable);
+      });
+      // .filter(item => item.stable === this.stable);
 
       core.info('Available versions: ' + availableVersions.map(v => v.version).join(', '));
 
