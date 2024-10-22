@@ -1,5 +1,5 @@
-// import * as tc from '@actions/tool-cache';
-import * as tc from '@mahabaleshwars/toolkit';
+import * as tc from '@actions/tool-cache';
+// import * as tc from '@mahabaleshwars/toolkit';
 // import * as tc from 'toolkit';
 
 import * as core from '@actions/core';
