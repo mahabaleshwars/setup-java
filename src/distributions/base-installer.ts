@@ -130,6 +130,12 @@ export abstract class JavaBase {
     if (!satisfiedVersions || satisfiedVersions.length === 0) {
       return null;
     }
+    core.info(
+      ' Found in tool-cache/ Satisfied version: ' + satisfiedVersions[0].version
+    );
+    core.info(
+      ' Found in tool-cache/ Satisfied version: ' + satisfiedVersions[0].path
+    );
 
     return {
       version: satisfiedVersions[0].version,
