@@ -50,6 +50,7 @@ export abstract class JavaBase {
 
   public async setupJava(): Promise<JavaInstallerResults> {
     let foundJava = this.findInToolcache();
+    core.debug('found java: '+ foundJava);
     if (foundJava && !this.checkLatest) {
       core.info(`Resolved Java ${foundJava.version} from tool-cache`);
     } else {
