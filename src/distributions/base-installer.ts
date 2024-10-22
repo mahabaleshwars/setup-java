@@ -103,6 +103,8 @@ export abstract class JavaBase {
   protected findInToolcache(): JavaInstallerResults | null {
     // we can't use tc.find directly because firstly, we need to filter versions by stability flag
     // if *-ea is provided, take only ea versions from toolcache, otherwise - only stable versions
+    core.debug(' Looking for Java in tool-cache folder: '+ this.toolcacheFolderName);
+    core.debug(' Looking for Java in tool-cache arch: '+ this.architecture);
     const availableVersions = tc
       .findAllVersions(this.toolcacheFolderName, this.architecture)
       .map(item => {
