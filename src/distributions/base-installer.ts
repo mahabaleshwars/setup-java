@@ -23,6 +23,8 @@ export abstract class JavaBase {
   protected packageType: string;
   protected stable: boolean;
   protected checkLatest: boolean;
+  protected tcl : string = process.env['RUNNER_TOOL_CACHE']||'';
+
 
   constructor(
     protected distribution: string,
@@ -105,6 +107,7 @@ export abstract class JavaBase {
     // if *-ea is provided, take only ea versions from toolcache, otherwise - only stable versions
     core.debug(' Looking for Java in tool-cache folder: '+ this.toolcacheFolderName);
     core.debug(' Looking for Java in tool-cache arch: '+ this.architecture);
+    core.debug(' tool cache: '+ path.join( this.tcl, this.toolcacheFolderName) );
     core.debug(' test available versions:  '+ tc.findAllVersions(this.toolcacheFolderName, this.architecture));
     const availableVersions = tc
   .findAllVersions(this.toolcacheFolderName, this.architecture)
