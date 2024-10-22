@@ -1,5 +1,5 @@
-import * as tc from '@actions/tool-cache';
-// import * as tc from '@mahabaleshwars/toolkit';
+// import * as tc from '@actions/tool-cache';
+import * as tc from '@mahabaleshwars/toolkit';
 // import * as tc from 'toolkit';
 
 import * as core from '@actions/core';
@@ -15,6 +15,12 @@ import {
 } from './base-models';
 import {MACOS_JAVA_CONTENT_POSTFIX} from '../constants';
 import os from 'os';
+
+interface ToolcacheItem {
+  version: string;
+  path: string;
+  stable: boolean;
+}
 
 export abstract class JavaBase {
   protected http: httpm.HttpClient;
@@ -113,7 +119,7 @@ export abstract class JavaBase {
     core.debug(' test available versions:  '+ tc.findAllVersions(this.toolcacheFolderName, this.architecture));
     const availableVersions = tc
   .findAllVersions(this.toolcacheFolderName, this.architecture)
-  .map(item => {
+  .map((item: string) => {
     const version = item
       .replace('-ea.', '+')
       .replace(/-ea$/, '')
@@ -128,7 +134,7 @@ export abstract class JavaBase {
       stable
     };
   })
-  .filter(item => {
+  .filter((item: { stable: boolean; version: any; }) => {
     const isStableMatch = item.stable === this.stable;
     console.debug(`Filtering Version: ${item.version}, Stable Match: ${isStableMatch}`);
     return isStableMatch;
@@ -136,12 +142,12 @@ export abstract class JavaBase {
 
 console.log('Filtered Versions:', availableVersions);
 
-      core.info('Available versions: ' + availableVersions.map(v => v.version).join(', '));
+      core.info('Available versions: ' + availableVersions.map((v: { version: any; }) => v.version).join(', '));
 
     const satisfiedVersions = availableVersions
-      .filter(item => isVersionSatisfies(this.version, item.version))
-      .filter(item => item.path)
-      .sort((a, b) => {
+      .filter((item: { version: string; }) => isVersionSatisfies(this.version, item.version))
+      .filter((item: { path: any; }) => item.path)
+      .sort((a: { version: string | semver.SemVer; }, b: { version: string | semver.SemVer; }) => {
         return -semver.compareBuild(a.version, b.version);
       });
     if (!satisfiedVersions || satisfiedVersions.length === 0) {
