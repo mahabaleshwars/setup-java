@@ -29,6 +29,15 @@ export class ZuluDistribution extends JavaBase {
     version: string
   ): Promise<JavaDownloadRelease> {
     const availableVersionsRaw = await this.getAvailableVersions();
+    core.info(
+      `Available versions: ${availableVersionsRaw
+        .map(v => v.jdk_version)
+        .join(', ')}`
+    );
+    core.info(
+      'Version  check: ' +
+        availableVersionsRaw.map(v => v.jdk_version).toString()
+    );
     const availableVersions = availableVersionsRaw.map(item => {
       return {
         version: convertVersionToSemver(item.jdk_version),
@@ -36,16 +45,6 @@ export class ZuluDistribution extends JavaBase {
         zuluVersion: convertVersionToSemver(item.zulu_version)
       };
     });
-    core.info(
-      `Available versions: ${availableVersions.map(v => v.version).join(', ')}`
-    );
-    core.info(
-      'Version  check: ' +
-        availableVersions
-          .filter(v => v.version == version)
-          .map(v => v.version)
-          .toString()
-    );
 
     const satisfiedVersions = availableVersions
       .filter(item => isVersionSatisfies(version, item.version))
