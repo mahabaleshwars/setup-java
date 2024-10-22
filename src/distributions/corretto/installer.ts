@@ -95,6 +95,7 @@ export class CorrettoDistribution extends JavaBase {
         `Could not find satisfied version for SemVer '${version}'. ${availableOptionsMessage}`
       );
     }
+    core.info('resolved version : '+ resolvedVersion);
     return resolvedVersion;
   }
 
