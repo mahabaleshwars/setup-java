@@ -106,26 +106,28 @@ export abstract class JavaBase {
     core.debug(' Looking for Java in tool-cache folder: '+ this.toolcacheFolderName);
     core.debug(' Looking for Java in tool-cache arch: '+ this.architecture);
     const availableVersions = tc
-      .findAllVersions(this.toolcacheFolderName, this.architecture)
-      .map(item => {
-        return {
-          version: item
-            .replace('-ea.', '+')
-            .replace(/-ea$/, '')
-            // Kotlin and some Java dependencies don't work properly when Java path contains "+" sign
-            // so replace "/hostedtoolcache/Java/11.0.3-4/x64" to "/hostedtoolcache/Java/11.0.3+4/x64" when retrieves  to cache
-            // related issue: https://github.com/actions/virtual-environments/issues/3014
-            .replace('-', '+'),
-          path:
-            getToolcachePath(
-              this.toolcacheFolderName,
-              item,
-              this.architecture
-            ) || '',
-          stable: !item.includes('-ea')
-        };
-      });
-      // .filter(item => item.stable === this.stable);
+  .findAllVersions(this.toolcacheFolderName, this.architecture)
+  .map(item => {
+    const version = item
+      .replace('-ea.', '+')
+      .replace(/-ea$/, '')
+      .replace('-', '+');
+    const path = getToolcachePath(this.toolcacheFolderName, item, this.architecture) || '';
+    const stable = !item.includes('-ea');
+
+    return {
+      version,
+      path,
+      stable
+    };
+  })
+  .filter(item => {
+    const isStableMatch = item.stable === this.stable;
+    console.log(`Filtering Version: ${item.version}, Stable Match: ${isStableMatch}`);
+    return isStableMatch;
+  });
+
+console.log('Filtered Versions:', availableVersions);
 
       core.info('Available versions: ' + availableVersions.map(v => v.version).join(', '));
 
