@@ -51,6 +51,9 @@ export abstract class JavaBase {
       core.info(`Resolved Java ${foundJava.version} from tool-cache`);
     } else {
       core.info(' this.version: ' + this.version);
+      
+      core.info(' Zulu Semver clean version: ' + semver.clean('8.0.432+6'));
+
       core.info(' Semver clean version: ' + semver.clean('8.432.06+1'));
       core.info(
         ' Semver valid range: ' + semver.valid(semver.clean('8.432.06+1'))
