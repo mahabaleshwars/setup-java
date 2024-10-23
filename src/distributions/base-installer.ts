@@ -50,18 +50,19 @@ export abstract class JavaBase {
     if (foundJava && !this.checkLatest) {
       core.info(`Resolved Java ${foundJava.version} from tool-cache`);
     } else {
+      core.info('===== JDK VERSION =====');
       core.info(' this.version: ' + this.version);
-      
+      core.info('===== JDK VERSION RESOLVED BY ZULU =====');
       core.info(' Zulu Semver clean version: ' + semver.clean('8.0.432+6'));
-
-      core.info(' Semver clean version: ' + semver.clean('8.432.6+1'));
+      core.info('===== JDK VERSION RESOLVED BY CORRETTO =====');
       core.info(
         ' Semver valid range: ' + semver.valid(semver.clean('8.432.06+1'))
       );
-      core.debug(' Semver clean version: ' + semver.clean(this.version));
-      core.debug(
-        ' Semver valid range: ' + semver.valid(semver.clean(this.version))
+      core.info(
+        '===== JDK VERSION RESOLVED BY CORRETTO AFTER REMOVING LEADING ZEROS====='
       );
+      core.info(' Semver clean version: ' + semver.clean('8.432.6+1'));
+
       core.info('Trying to resolve the latest version from remote');
       const javaRelease = await this.findPackageForDownload(this.version);
       core.info(`Resolved latest version as ${javaRelease.version}`);
