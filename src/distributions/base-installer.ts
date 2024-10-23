@@ -50,6 +50,14 @@ export abstract class JavaBase {
     if (foundJava && !this.checkLatest) {
       core.info(`Resolved Java ${foundJava.version} from tool-cache`);
     } else {
+      core.info(' Semver clean version: ' + semver.clean(this.version));
+      core.info(
+        ' Semver valid range: ' + semver.valid(semver.clean(this.version))
+      );
+      core.debug(' Semver clean version: ' + semver.clean(this.version));
+      core.debug(
+        ' Semver valid range: ' + semver.valid(semver.clean(this.version))
+      );
       core.info('Trying to resolve the latest version from remote');
       const javaRelease = await this.findPackageForDownload(this.version);
       core.info(`Resolved latest version as ${javaRelease.version}`);
