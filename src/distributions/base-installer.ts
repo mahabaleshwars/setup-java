@@ -51,9 +51,9 @@ export abstract class JavaBase {
       core.info(`Resolved Java ${foundJava.version} from tool-cache`);
     } else {
       core.info(' this.version: ' + this.version);
-      core.info(' Semver clean version: ' + semver.clean(this.version));
+      core.info(' Semver clean version: ' + semver.clean('8.432.06+1'));
       core.info(
-        ' Semver valid range: ' + semver.valid(semver.clean(this.version))
+        ' Semver valid range: ' + semver.valid(semver.clean('8.432.06+1'))
       );
       core.debug(' Semver clean version: ' + semver.clean(this.version));
       core.debug(
