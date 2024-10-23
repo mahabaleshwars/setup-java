@@ -54,7 +54,7 @@ export abstract class JavaBase {
       
       core.info(' Zulu Semver clean version: ' + semver.clean('8.0.432+6'));
 
-      core.info(' Semver clean version: ' + semver.clean('8.432.06+1'));
+      core.info(' Semver clean version: ' + semver.clean('8.432.6+1'));
       core.info(
         ' Semver valid range: ' + semver.valid(semver.clean('8.432.06+1'))
       );
