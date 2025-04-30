@@ -140,7 +140,9 @@ export function getVersionFromFileContent(
   const fileContent = content.match(javaVersionRegExp)?.groups?.version
     ? (content.match(javaVersionRegExp)?.groups?.version as string)
     : '';
+  core.info('file content first output' + fileContent);
   if (!fileContent) {
+    core.info('file content' + fileContent);
     core.info('Returning null version from file');
     return null;
   }
