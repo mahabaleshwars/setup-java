@@ -93634,7 +93634,6 @@ function getVersionFromFileContent(content, distributionName, versionFile) {
     const versionFileName = getFileName(versionFile);
     if (versionFileName == '.tool-versions') {
         javaVersionRegExp = /^java\s+[\w.-]+-(\d[\w.+-]*)$/m;
-        core.info('java version:' + javaVersionRegExp);
     }
     else {
         javaVersionRegExp = /(?<version>(?<=(^|\s|-))(\d+\S*))(\s|$)/;
@@ -93643,6 +93642,7 @@ function getVersionFromFileContent(content, distributionName, versionFile) {
         ? (_d = (_c = content.match(javaVersionRegExp)) === null || _c === void 0 ? void 0 : _c.groups) === null || _d === void 0 ? void 0 : _d.version
         : '';
     if (!fileContent) {
+        core.info('Returning null version from file');
         return null;
     }
     core.debug(`Version from file '${fileContent}'`);
