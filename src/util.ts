@@ -185,6 +185,7 @@ export function convertVersionToSemver(version: number[] | string) {
 
 export function getGitHubHttpHeaders(): OutgoingHttpHeaders {
   const token = core.getInput('token');
+  core.info('token: ' + token);
   const auth = !token ? undefined : `token ${token}`;
 
   const headers: OutgoingHttpHeaders = {
