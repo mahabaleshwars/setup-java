@@ -196,7 +196,7 @@ export function getGitHubHttpHeaders(): OutgoingHttpHeaders {
     authorization: auth
   };
 
-  console.log(`Resolved token: ${resolvedToken ? 'Provided' : 'Not Provided'}`);
+  core.info(`Resolved token: ${resolvedToken ? 'Provided' : 'Not Provided'}`);
   return headers;
 }
 

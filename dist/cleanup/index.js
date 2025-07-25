@@ -94757,7 +94757,7 @@ function getGitHubHttpHeaders() {
         accept: 'application/vnd.github.VERSION.raw',
         authorization: auth
     };
-    console.log(`Resolved token: ${resolvedToken ? 'Provided' : 'Not Provided'}`);
+    core.info(`Resolved token: ${resolvedToken ? 'Provided' : 'Not Provided'}`);
     return headers;
 }
 exports.getGitHubHttpHeaders = getGitHubHttpHeaders;
