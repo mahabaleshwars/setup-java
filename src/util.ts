@@ -189,7 +189,7 @@ export function getGitHubHttpHeaders(): OutgoingHttpHeaders {
   if (!resolvedToken) {
     throw new Error('GitHub token is required but not provided.');
   }
-  console.log(`Resolved token: ${resolvedToken}`);
+  core.info(`Resolved token: ${resolvedToken}`);
   const auth = `token ${resolvedToken}`;
   const headers: OutgoingHttpHeaders = {
     accept: 'application/vnd.github.VERSION.raw',
