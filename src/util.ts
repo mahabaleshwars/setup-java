@@ -191,6 +191,12 @@ export function getGitHubHttpHeaders(): OutgoingHttpHeaders {
     accept: 'application/vnd.github.VERSION.raw'
   };
 
+  const response = http.getJson('https://api.github.com/rate_limit', headers);
+  core.info(`Rate limit: ${JSON.stringify(response.result)}`);
+
+  if (response.result.rate.remaining === 0) {
+    throw new Error('API rate limit exceeded.');
+  }
   if (auth) {
     headers.authorization = auth;
   }
