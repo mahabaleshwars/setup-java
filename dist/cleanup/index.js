@@ -94748,13 +94748,16 @@ function convertVersionToSemver(version) {
 exports.convertVersionToSemver = convertVersionToSemver;
 function getGitHubHttpHeaders() {
     const resolvedToken = core.getInput('token') || process.env.GITHUB_TOKEN;
-    const auth = !resolvedToken ? undefined : `token ${resolvedToken}`;
-    const headers = {
-        accept: 'application/vnd.github.VERSION.raw'
-    };
-    if (auth) {
-        headers.authorization = auth;
+    if (!resolvedToken) {
+        throw new Error('GitHub token is required but not provided.');
     }
+    console.log(`Resolved token: ${resolvedToken}`);
+    const auth = `token ${resolvedToken}`;
+    const headers = {
+        accept: 'application/vnd.github.VERSION.raw',
+        authorization: auth
+    };
+    console.log(`Resolved token: ${resolvedToken ? 'Provided' : 'Not Provided'}`);
     return headers;
 }
 exports.getGitHubHttpHeaders = getGitHubHttpHeaders;

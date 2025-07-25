@@ -185,15 +185,18 @@ export function convertVersionToSemver(version: number[] | string) {
 
 export function getGitHubHttpHeaders(): OutgoingHttpHeaders {
   const resolvedToken = core.getInput('token') || process.env.GITHUB_TOKEN;
-  const auth = !resolvedToken ? undefined : `token ${resolvedToken}`;
 
+  if (!resolvedToken) {
+    throw new Error('GitHub token is required but not provided.');
+  }
+  console.log(`Resolved token: ${resolvedToken}`);
+  const auth = `token ${resolvedToken}`;
   const headers: OutgoingHttpHeaders = {
-    accept: 'application/vnd.github.VERSION.raw'
+    accept: 'application/vnd.github.VERSION.raw',
+    authorization: auth
   };
 
-  if (auth) {
-    headers.authorization = auth;
-  }
+  console.log(`Resolved token: ${resolvedToken ? 'Provided' : 'Not Provided'}`);
   return headers;
 }
 
