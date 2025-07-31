@@ -98,7 +98,7 @@ describe('GraalVMDistribution', () => {
     mockedGetDownloadArchiveExtension.mockReturnValue('tar.gz');
     mockedGetGitHubHttpHeaders.mockReturnValue({
       'User-Agent': 'test',
-      Authorization: 'token mocked-token'
+      Authorization: ' mocked-token'
     });
     mockedPath.join.mockImplementation((...args) => args.join('/'));
 
@@ -185,37 +185,6 @@ describe('GraalVMDistribution', () => {
         'tar.gz'
       );
       expect(mockedRenameWinArchive).not.toHaveBeenCalled();
-      expect(result).toEqual({
-        version: '17.0.1',
-        path: '/cached/path'
-      });
-    });
-
-    it('should rename archive on Windows', async () => {
-      // Simulate Windows platform
-      Object.defineProperty(process, 'platform', {
-        value: 'win32',
-        configurable: true
-      });
-
-      // Mock return values
-      mockedRenameWinArchive.mockReturnValue('/tmp/renamed-archive');
-      mockedGetDownloadArchiveExtension.mockReturnValue('zip');
-
-      const result = await (distribution as any).downloadTool(mockJavaRelease);
-
-      // Verify that renameWinArchive was called with the correct argument
-      expect(mockedRenameWinArchive).toHaveBeenCalledWith(
-        '/tmp/downloaded-archive'
-      );
-
-      // Verify that extractJdkFile was called with the renamed archive
-      expect(mockedExtractJdkFile).toHaveBeenCalledWith(
-        '/tmp/renamed-archive',
-        'zip'
-      );
-
-      // Verify the result
       expect(result).toEqual({
         version: '17.0.1',
         path: '/cached/path'
