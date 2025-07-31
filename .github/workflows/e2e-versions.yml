@@ -71,6 +71,8 @@ jobs:
         with:
           java-version: ${{ matrix.version }}
           distribution: ${{ matrix.distribution }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify Java
@@ -157,6 +159,8 @@ jobs:
           distribution: ${{ matrix.distribution }}
           java-version: 11
           check-latest: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify Java
@@ -194,6 +198,8 @@ jobs:
           java-version: |
             11
             17
+          token: ${{ secrets.GITHUB_TOKEN }}
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify Java env variables
@@ -363,6 +369,7 @@ jobs:
           java-version: ${{ matrix.version }}
           java-package: ${{ matrix.java-package }}
           distribution: ${{ matrix.distribution }}
+          token: ${{ secrets.GITHUB_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Verify Java
