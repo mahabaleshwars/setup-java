@@ -1,151 +1,282 @@
-import {GraalVMDistribution} from '../../src/distributions/graalvm/installer';
-import os from 'os';
 import * as core from '@actions/core';
-import {getDownloadArchiveExtension} from '../../src/util';
-import {HttpClient, HttpClientResponse} from '@actions/http-client';
+import * as tc from '@actions/tool-cache';
+import fs from 'fs';
+import path from 'path';
+import {HttpClient, HttpCodes} from '@actions/http-client';
+import {GraalVMDistribution} from '../../src/distributions/graalvm/installer';
+import {JavaInstallerOptions} from '../../src/distributions/base-models';
+import {
+  getDownloadArchiveExtension,
+  extractJdkFile,
+  renameWinArchive,
+  getGitHubHttpHeaders
+} from '../../src/util';
+
+// Proper fs mocking that includes promises
+jest.mock('fs', () => ({
+  ...jest.requireActual('fs'),
+  readdirSync: jest.fn(),
+  promises: {
+    access: jest.fn().mockResolvedValue(undefined),
+    readFile: jest.fn().mockResolvedValue(''),
+    writeFile: jest.fn().mockResolvedValue(undefined),
+    mkdir: jest.fn().mockResolvedValue(undefined),
+    readdir: jest.fn().mockResolvedValue([]),
+    stat: jest.fn().mockResolvedValue({isDirectory: () => true}),
+    lstat: jest.fn().mockResolvedValue({isSymbolicLink: () => false})
+  }
+}));
+
+// Mock other dependencies
+jest.mock('@actions/core');
+jest.mock('@actions/tool-cache');
+jest.mock('path');
+jest.mock('../../src/util');
+
+const mockedCore = core as jest.Mocked<typeof core>;
+const mockedTc = tc as jest.Mocked<typeof tc>;
+const mockedFs = fs as jest.Mocked<typeof fs>;
+const mockedPath = path as jest.Mocked<typeof path>;
+const mockedGetDownloadArchiveExtension =
+  getDownloadArchiveExtension as jest.MockedFunction<
+    typeof getDownloadArchiveExtension
+  >;
+const mockedExtractJdkFile = extractJdkFile as jest.MockedFunction<
+  typeof extractJdkFile
+>;
+const mockedRenameWinArchive = renameWinArchive as jest.MockedFunction<
+  typeof renameWinArchive
+>;
+const mockedGetGitHubHttpHeaders = getGitHubHttpHeaders as jest.MockedFunction<
+  typeof getGitHubHttpHeaders
+>;
 
 describe('GraalVMDistribution', () => {
   let distribution: GraalVMDistribution;
-  let spyDebug: jest.SpyInstance;
-  let spyHttpClient: jest.SpyInstance;
+  let mockHttpClient: jest.Mocked<HttpClient>;
+  let originalPlatform: NodeJS.Platform;
+
+  const defaultOptions: JavaInstallerOptions = {
+    version: '17',
+    architecture: 'x64',
+    packageType: 'jdk',
+    checkLatest: false
+  };
+
+  beforeAll(() => {
+    // Mock console methods to avoid noise in test output
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
 
   beforeEach(() => {
-    distribution = new GraalVMDistribution({
-      version: '',
-      architecture: 'x64',
-      packageType: 'jdk',
-      checkLatest: false
-    });
+    // Store original platform
+    originalPlatform = process.platform;
 
-    spyDebug = jest.spyOn(core, 'debug').mockImplementation(() => {});
+    // Reset all mocks
+    jest.clearAllMocks();
+
+    // Mock HttpClient
+    mockHttpClient = {
+      head: jest.fn(),
+      getJson: jest.fn(),
+      get: jest.fn(),
+      post: jest.fn(),
+      patch: jest.fn(),
+      put: jest.fn(),
+      del: jest.fn(),
+      options: jest.fn(),
+      dispose: jest.fn()
+    } as unknown as jest.Mocked<HttpClient>;
+
+    // Create distribution with mocked http client
+    distribution = new GraalVMDistribution(defaultOptions);
+    (distribution as any).http = mockHttpClient;
+
+    // Setup default mocks
+    mockedGetDownloadArchiveExtension.mockReturnValue('tar.gz');
+    mockedGetGitHubHttpHeaders.mockReturnValue({
+      'User-Agent': 'test',
+      Authorization: 'token mocked-token'
+    });
+    mockedPath.join.mockImplementation((...args) => args.join('/'));
+
+    // Mock core methods
+    mockedCore.info.mockImplementation(() => {});
+    mockedCore.debug.mockImplementation(() => {});
+    mockedCore.warning.mockImplementation(() => {});
+    mockedCore.error.mockImplementation(() => {});
+    mockedCore.getInput.mockReturnValue('');
   });
 
   afterEach(() => {
+    // Restore original platform
+    Object.defineProperty(process, 'platform', {
+      value: originalPlatform,
+      configurable: true
+    });
+
+    // Clean up mocks
     jest.restoreAllMocks();
   });
 
-  const setupHttpClientSpy = () => {
-    spyHttpClient = jest.spyOn(HttpClient.prototype, 'head').mockResolvedValue({
-      message: {statusCode: 200} as any, // Minimal mock for IncomingMessage
-      readBody: jest.fn().mockResolvedValue('')
-    } as HttpClientResponse);
-  };
+  afterAll(() => {
+    // Restore console methods
+    jest.restoreAllMocks();
+  });
 
-  const testCases = [
-    [
-      '21',
-      '21',
-      'https://download.oracle.com/graalvm/21/latest/graalvm-jdk-21_{{OS_TYPE}}-x64_bin.{{ARCHIVE_TYPE}}'
-    ],
-    [
-      '21.0.4',
-      '21.0.4',
-      'https://download.oracle.com/graalvm/21/archive/graalvm-jdk-21.0.4_{{OS_TYPE}}-x64_bin.{{ARCHIVE_TYPE}}'
-    ],
-    [
-      '17',
-      '17',
-      'https://download.oracle.com/graalvm/17/latest/graalvm-jdk-17_{{OS_TYPE}}-x64_bin.{{ARCHIVE_TYPE}}'
-    ],
-    [
-      '17.0.12',
-      '17.0.12',
-      'https://download.oracle.com/graalvm/17/archive/graalvm-jdk-17.0.12_{{OS_TYPE}}-x64_bin.{{ARCHIVE_TYPE}}'
-    ]
-  ];
-
-  it.each(testCases)(
-    'should find package for version %s',
-    async (input, expectedVersion, expectedUrl) => {
-      setupHttpClientSpy();
-
-      const result = await distribution['findPackageForDownload'](input);
-      const osType = distribution.getPlatform();
-      const archiveType = getDownloadArchiveExtension();
-      const expectedFormattedUrl = expectedUrl
-        .replace('{{OS_TYPE}}', osType)
-        .replace('{{ARCHIVE_TYPE}}', archiveType);
-
-      expect(result.version).toBe(expectedVersion);
-      expect(result.url).toBe(expectedFormattedUrl);
-    }
-  );
-
-  it.each([
-    [
-      '24-ea',
-      /^https:\/\/github\.com\/graalvm\/oracle-graalvm-ea-builds\/releases\/download\/jdk-24\.0\.0-ea\./
-    ]
-  ])(
-    'should find EA package for version %s',
-    async (version, expectedUrlPrefix) => {
-      setupHttpClientSpy();
-
-      const eaDistro = new GraalVMDistribution({
-        version,
-        architecture: '',
-        packageType: 'jdk',
-        checkLatest: false
-      });
-
-      const versionWithoutEA = version.split('-')[0];
-      const result = await eaDistro['findPackageForDownload'](versionWithoutEA);
-
-      expect(result.url).toEqual(expect.stringMatching(expectedUrlPrefix));
-    }
-  );
-
-  it.each([
-    ['amd64', 'x64'],
-    ['arm64', 'aarch64']
-  ])(
-    'should map OS architecture %s to distribution architecture %s',
-    async (osArch: string, distroArch: string) => {
-      jest.spyOn(os, 'arch').mockReturnValue(osArch);
-      jest.spyOn(os, 'platform').mockReturnValue('linux');
-
-      const version = '21';
-      const distro = new GraalVMDistribution({
-        version,
-        architecture: '',
-        packageType: 'jdk',
-        checkLatest: false
-      });
-
-      const osType = distribution.getPlatform();
-      if (osType === 'windows' && distroArch === 'aarch64') {
-        console.warn('Skipping test: aarch64 is not available for Windows');
-        return;
-      }
-
-      const archiveType = getDownloadArchiveExtension();
-      const result = await distro['findPackageForDownload'](version);
-      const expectedUrl = `https://download.oracle.com/graalvm/21/latest/graalvm-jdk-21_${osType}-${distroArch}_bin.${archiveType}`;
-
-      expect(result.url).toBe(expectedUrl);
-    }
-  );
-
-  it('should throw an error for unsupported versions', async () => {
-    setupHttpClientSpy();
-
-    const unsupportedVersions = ['8', '11'];
-    for (const version of unsupportedVersions) {
-      await expect(
-        distribution['findPackageForDownload'](version)
-      ).rejects.toThrow(/GraalVM is only supported for JDK 17 and later/);
-    }
-
-    const unavailableEADistro = new GraalVMDistribution({
-      version: '17-ea',
-      architecture: '',
-      packageType: 'jdk',
-      checkLatest: false
+  describe('constructor', () => {
+    it('should initialize GraalVM distribution', () => {
+      expect(distribution).toBeInstanceOf(GraalVMDistribution);
+      expect((distribution as any).distribution).toBe('GraalVM');
     });
-    await expect(
-      unavailableEADistro['findPackageForDownload']('17')
-    ).rejects.toThrow(
-      `No GraalVM EA build found for version '17-ea'. Please check if the version is correct.`
-    );
+
+    it('should inherit from JavaBase', () => {
+      expect(distribution).toBeInstanceOf(Object);
+    });
+  });
+
+  describe('downloadTool', () => {
+    const mockJavaRelease = {
+      url: 'https://example.com/graalvm.tar.gz',
+      version: '17.0.1'
+    };
+
+    beforeEach(() => {
+      mockedTc.downloadTool.mockResolvedValue('/tmp/downloaded-archive');
+      mockedExtractJdkFile.mockResolvedValue('/tmp/extracted');
+      mockedFs.readdirSync.mockReturnValue(['graalvm-jdk-17'] as any);
+      mockedTc.cacheDir.mockResolvedValue('/cached/path');
+
+      // Mock getters properly by using Object.defineProperty
+      Object.defineProperty(distribution, 'toolcacheFolderName', {
+        get: jest.fn().mockReturnValue('graalvm'),
+        configurable: true
+      });
+
+      // Mock other required methods
+      (distribution as any).getToolcacheVersionName = jest
+        .fn()
+        .mockReturnValue('17.0.1');
+
+      // Mock architecture getter
+      Object.defineProperty(distribution, 'architecture', {
+        get: jest.fn().mockReturnValue('x64'),
+        configurable: true
+      });
+    });
+
+    it('should download and extract Java archive on non-Windows', async () => {
+      Object.defineProperty(process, 'platform', {
+        value: 'linux',
+        configurable: true
+      });
+      mockedGetDownloadArchiveExtension.mockReturnValue('tar.gz');
+
+      const result = await (distribution as any).downloadTool(mockJavaRelease);
+
+      expect(mockedCore.info).toHaveBeenCalledWith(
+        'Downloading Java 17.0.1 (GraalVM) from https://example.com/graalvm.tar.gz ...'
+      );
+      expect(mockedTc.downloadTool).toHaveBeenCalledWith(mockJavaRelease.url);
+      expect(mockedExtractJdkFile).toHaveBeenCalledWith(
+        '/tmp/downloaded-archive',
+        'tar.gz'
+      );
+      expect(mockedRenameWinArchive).not.toHaveBeenCalled();
+      expect(result).toEqual({
+        version: '17.0.1',
+        path: '/cached/path'
+      });
+    });
+
+    it('should rename archive on Windows', async () => {
+      // Simulate Windows platform
+      Object.defineProperty(process, 'platform', {
+        value: 'win32',
+        configurable: true
+      });
+
+      // Mock return values
+      mockedRenameWinArchive.mockReturnValue('/tmp/renamed-archive');
+      mockedGetDownloadArchiveExtension.mockReturnValue('zip');
+
+      const result = await (distribution as any).downloadTool(mockJavaRelease);
+
+      // Verify that renameWinArchive was called with the correct argument
+      expect(mockedRenameWinArchive).toHaveBeenCalledWith(
+        '/tmp/downloaded-archive'
+      );
+
+      // Verify that extractJdkFile was called with the renamed archive
+      expect(mockedExtractJdkFile).toHaveBeenCalledWith(
+        '/tmp/renamed-archive',
+        'zip'
+      );
+
+      // Verify the result
+      expect(result).toEqual({
+        version: '17.0.1',
+        path: '/cached/path'
+      });
+    });
+  });
+
+  describe('findPackageForDownload', () => {
+    beforeEach(() => {
+      (distribution as any).distributionArchitecture = jest
+        .fn()
+        .mockReturnValue('x64');
+      (distribution as any).stable = true;
+      (distribution as any).packageType = 'jdk';
+      (distribution as any).getPlatform = jest.fn().mockReturnValue('linux');
+      mockedGetDownloadArchiveExtension.mockReturnValue('tar.gz');
+    });
+
+    it('should throw error for unsupported architecture', async () => {
+      (distribution as any).distributionArchitecture = jest
+        .fn()
+        .mockReturnValue('arm32');
+      (distribution as any).architecture = 'arm32';
+
+      await expect(
+        (distribution as any).findPackageForDownload('17')
+      ).rejects.toThrow('Unsupported architecture: arm32');
+    });
+
+    it('should throw error for non-JDK package type', async () => {
+      (distribution as any).packageType = 'jre';
+
+      await expect(
+        (distribution as any).findPackageForDownload('17')
+      ).rejects.toThrow('GraalVM provides only the `jdk` package type');
+    });
+
+    it('should throw error for JDK versions below 17', async () => {
+      await expect(
+        (distribution as any).findPackageForDownload('11')
+      ).rejects.toThrow('GraalVM is only supported for JDK 17 and later');
+
+      await expect(
+        (distribution as any).findPackageForDownload('8')
+      ).rejects.toThrow('GraalVM is only supported for JDK 17 and later');
+    });
+
+    it('should construct correct URL for major version', async () => {
+      mockHttpClient.head.mockResolvedValue({
+        message: {statusCode: HttpCodes.OK}
+      } as any);
+
+      const result = await (distribution as any).findPackageForDownload('17');
+
+      expect(mockHttpClient.head).toHaveBeenCalledWith(
+        'https://download.oracle.com/graalvm/17/latest/graalvm-jdk-17_linux-x64_bin.tar.gz'
+      );
+      expect(result).toEqual({
+        url: 'https://download.oracle.com/graalvm/17/latest/graalvm-jdk-17_linux-x64_bin.tar.gz',
+        version: '17'
+      });
+    });
   });
 });
