@@ -1,0 +1,87 @@
+docs:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'docs/**/*'
+      - '*.md'
+      - 'README.md'
+      - 'LICENSE'
+      - 'CODE_OF_CONDUCT.md'
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/workflows/**/*'
+      - '.github/actions/**/*'
+
+build:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'webpack.config.js'
+      - '.eslintrc.js'
+      - '.eslintignore'
+      - '.prettierrc.js'
+      - '.prettierignore'
+      - 'jest.config.js'
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '__tests__/**/*'
+      - '**/*.test.ts'
+      - '**/*.spec.ts'
+
+toolcache:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/toolchains.ts'
+      - '__tests__/toolchains.test.ts'
+
+java:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/setup-java.ts'
+      - 'src/cleanup-java.ts'
+      - 'src/auth.ts'
+      - 'src/gpg.ts'
+      - '__tests__/auth.test.ts'
+      - '__tests__/cleanup-java.test.ts'
+      - '__tests__/gpg.test.ts'
+
+cache:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/cache.ts'
+      - '__tests__/cache.test.ts'
+      - '__tests__/cache/**/*'
+
+distribution:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'src/distributions/**/*'
+      - '__tests__/distributors/**/*'
+
+gradle:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*gradle*'
+      - '**/*Gradle*'
+      - '__tests__/cache/gradle*/**/*'
+
+maven:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*maven*'
+      - '**/*Maven*'
+      - '**/*pom.xml'
+      - '__tests__/cache/maven/**/*'
+
+sbt:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*sbt*'
+      - '**/*Sbt*'
+      - '**/*.sbt'
+      - '__tests__/cache/sbt/**/*'

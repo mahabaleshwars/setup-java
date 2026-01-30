@@ -1,0 +1,29 @@
+"needs triage":
+  - '.*'
+
+bug:
+  - '\b(bug|error|issue|problem|broken|fail|crash|exception)\b'
+
+"feature request":
+  - '\b(feature|enhancement|improve|add|support|request)\b'
+
+documentation:
+  - '\b(doc|documentation|readme|guide|example)\b'
+
+java:
+  - '\b(java|jdk|jre|openjdk|temurin|zulu|corretto|liberica|adopt|semeru|dragonwell|sapmachine|graalvm|oracle)\b'
+
+cache:
+  - '\b(cache|caching|restore|save)\b'
+
+maven:
+  - '\b(maven|mvn|pom\.xml)\b'
+
+gradle:
+  - '\b(gradle|gradlew|build\.gradle)\b'
+
+sbt:
+  - '\b(sbt|scala|build\.sbt)\b'
+
+ci:
+  - '\b(ci|workflow|action|github actions|pipeline)\b'
