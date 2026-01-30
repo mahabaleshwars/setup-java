@@ -1,0 +1,46 @@
+# Configuration for PR labeler
+# https://github.com/actions/labeler
+
+docs:
+  - changed-files:
+    - any-glob-to-any-file: ['docs/**/*', '*.md', '**/*.md']
+
+ci:
+  - changed-files:
+    - any-glob-to-any-file: ['.github/workflows/**/*', '.github/**/*.yml', '.github/**/*.yaml']
+
+build:
+  - changed-files:
+    - any-glob-to-any-file: ['package.json', 'package-lock.json', 'tsconfig.json', 'jest.config.js', '.eslintrc.js', '.prettierrc.js', 'dist/**/*']
+
+tests:
+  - changed-files:
+    - any-glob-to-any-file: ['__tests__/**/*', '**/*.test.ts', '**/*.spec.ts']
+
+toolcache:
+  - changed-files:
+    - any-glob-to-any-file: ['src/setup-java.ts', 'src/distributions/**/*', 'src/util.ts']
+
+java:
+  - changed-files:
+    - any-glob-to-any-file: ['src/**/*.ts', 'action.yml']
+
+cache:
+  - changed-files:
+    - any-glob-to-any-file: ['src/cache.ts', '__tests__/cache.test.ts', '__tests__/cache/**/*']
+
+distribution:
+  - changed-files:
+    - any-glob-to-any-file: ['src/distributions/**/*']
+
+gradle:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*gradle*', '**/*Gradle*', '__tests__/cache/gradle*/**/*']
+
+maven:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*maven*', '**/*Maven*', '__tests__/cache/maven/**/*', '**/pom.xml']
+
+sbt:
+  - changed-files:
+    - any-glob-to-any-file: ['**/*sbt*', '**/*Sbt*', '__tests__/cache/sbt/**/*', '**/build.sbt']

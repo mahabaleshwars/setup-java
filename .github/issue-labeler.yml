@@ -1,0 +1,32 @@
+# Configuration for issue labeler
+# https://github.com/github/issue-labeler
+
+needs triage:
+  - '.*'
+
+bug:
+  - '\b(bug|error|issue|problem|broken|fail|crash|exception)\b'
+
+feature request:
+  - '\b(feature|enhancement|improvement|suggestion|request)\b'
+
+documentation:
+  - '\b(doc|documentation|readme|guide|example)\b'
+
+java:
+  - '\b(java|jdk|jre|openjdk|temurin|corretto|zulu|liberica|microsoft|oracle|dragonwell|sapmachine|graalvm|semeru|jetbrains)\b'
+
+cache:
+  - '\b(cache|caching)\b'
+
+maven:
+  - '\b(maven|pom\.xml|mvn)\b'
+
+gradle:
+  - '\b(gradle|build\.gradle)\b'
+
+sbt:
+  - '\b(sbt|build\.sbt|scala)\b'
+
+ci:
+  - '\b(ci|continuous integration|workflow|github actions|action)\b'
