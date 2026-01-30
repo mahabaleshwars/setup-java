@@ -3,7 +3,6 @@ docs:
     - any-glob-to-any-file:
       - 'docs/**/*'
       - '*.md'
-      - 'README.md'
       - 'LICENSE'
       - 'CODE_OF_CONDUCT.md'
 
@@ -66,22 +65,27 @@ distribution:
 gradle:
   - changed-files:
     - any-glob-to-any-file:
-      - '**/*gradle*'
-      - '**/*Gradle*'
+      - '**/gradle/**/*'
+      - '**/gradlew'
+      - '**/gradlew.bat'
+      - '**/*.gradle'
+      - '**/*.gradle.kts'
+      - '**/gradle.properties'
       - '__tests__/cache/gradle*/**/*'
 
 maven:
   - changed-files:
     - any-glob-to-any-file:
-      - '**/*maven*'
-      - '**/*Maven*'
-      - '**/*pom.xml'
+      - '**/pom.xml'
+      - '**/.mvn/**/*'
+      - '**/mvnw'
+      - '**/mvnw.cmd'
       - '__tests__/cache/maven/**/*'
 
 sbt:
   - changed-files:
     - any-glob-to-any-file:
-      - '**/*sbt*'
-      - '**/*Sbt*'
       - '**/*.sbt'
+      - '**/project/**/*.scala'
+      - '**/project/build.properties'
       - '__tests__/cache/sbt/**/*'
