@@ -198,7 +198,7 @@ describe('getAvailableVersions', () => {
 
       await expect(
         distribution['findPackageForDownload'](version)
-      ).rejects.toThrow("Could not find satisfied version for SemVer '4'");
+      ).rejects.toThrow(/Could not find satisfied version for '4'/);
     });
 
     it.each([

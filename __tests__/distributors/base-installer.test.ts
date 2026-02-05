@@ -38,7 +38,7 @@ class EmptyJavaBase extends JavaBase {
   ): Promise<JavaDownloadRelease> {
     const availableVersion = '11.0.9';
     if (!semver.satisfies(availableVersion, range)) {
-      throw new Error('Available version not found');
+      throw this.createVersionNotFoundError(range);
     }
 
     return {
@@ -535,7 +535,7 @@ describe('setupJava', () => {
     async input => {
       mockJavaBase = new EmptyJavaBase(input);
       await expect(mockJavaBase.setupJava()).rejects.toThrow(
-        'Available version not found'
+        /Could not find satisfied version for/
       );
       expect(spyTcFindAllVersions).toHaveBeenCalled();
       expect(spyCoreAddPath).not.toHaveBeenCalled();

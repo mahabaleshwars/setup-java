@@ -98,7 +98,7 @@ describe('findPackageForDownload', () => {
     });
     distribution['getAvailableVersions'] = async () => manifestData as any;
     await expect(distribution['findPackageForDownload']('8.x')).rejects.toThrow(
-      /Could not find satisfied version for SemVer */
+      /Could not find satisfied version for '8.x'/
     );
   });
 
@@ -111,7 +111,7 @@ describe('findPackageForDownload', () => {
     });
     distribution['getAvailableVersions'] = async () => [];
     await expect(distribution['findPackageForDownload']('8')).rejects.toThrow(
-      /Could not find satisfied version for SemVer */
+      /Could not find satisfied version for '8'/
     );
   });
 });

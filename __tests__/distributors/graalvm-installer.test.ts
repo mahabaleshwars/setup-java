@@ -350,9 +350,7 @@ describe('GraalVMDistribution', () => {
 
         await expect(
           (distribution as any).findPackageForDownload('17.0.99')
-        ).rejects.toThrow(
-          'Could not find GraalVM for SemVer 17.0.99. Please check if this version is available at https://download.oracle.com/graalvm'
-        );
+        ).rejects.toThrow(/Could not find satisfied version for '17.0.99'/);
       });
 
       it('should throw error for unauthorized access (401)', async () => {

@@ -51,9 +51,7 @@ export class DragonwellDistribution extends JavaBase {
       });
 
     if (!matchedVersions.length) {
-      throw new Error(
-        `Couldn't find any satisfied version for the specified java-version: "${version}" and architecture: "${this.architecture}".`
-      );
+      throw this.createVersionNotFoundError(version);
     }
 
     const resolvedVersion = matchedVersions[0];
