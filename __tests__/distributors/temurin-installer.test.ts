@@ -213,7 +213,7 @@ describe('findPackageForDownload', () => {
     distribution['getAvailableVersions'] = async () => manifestData as any;
     await expect(
       distribution['findPackageForDownload']('9.0.8')
-    ).rejects.toThrow(/Could not find satisfied version for SemVer */);
+    ).rejects.toThrow(/Could not find satisfied version for '9.0.8'/);
   });
 
   it('version is not found', async () => {
@@ -228,7 +228,7 @@ describe('findPackageForDownload', () => {
     );
     distribution['getAvailableVersions'] = async () => manifestData as any;
     await expect(distribution['findPackageForDownload']('7.x')).rejects.toThrow(
-      /Could not find satisfied version for SemVer */
+      /Could not find satisfied version for '7.x'/
     );
   });
 
@@ -244,7 +244,7 @@ describe('findPackageForDownload', () => {
     );
     distribution['getAvailableVersions'] = async () => [];
     await expect(distribution['findPackageForDownload']('8')).rejects.toThrow(
-      /Could not find satisfied version for SemVer */
+      /Could not find satisfied version for '8'/
     );
   });
 });
