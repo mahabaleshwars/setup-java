@@ -231,9 +231,7 @@ describe('getAvailableVersions', () => {
 
         await expect(
           distribution['findPackageForDownload'](jdkVersion)
-        ).rejects.toThrow(
-          `Couldn't find any satisfied version for the specified java-version: "${jdkVersion}" and architecture: "${arch}".`
-        );
+        ).rejects.toThrow(/Could not find satisfied version for/);
       }
     );
 
