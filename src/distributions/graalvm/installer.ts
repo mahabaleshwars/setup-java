@@ -149,9 +149,7 @@ export class GraalVMDistribution extends JavaBase {
     const statusCode = response.message.statusCode;
 
     if (statusCode === HttpCodes.NotFound) {
-      throw new Error(
-        `Could not find GraalVM for SemVer ${range}. Please check if this version is available at ${GRAALVM_DL_BASE}`
-      );
+      throw this.createVersionNotFoundError(range);
     }
 
     if (
