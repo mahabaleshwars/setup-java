@@ -1,4 +1,5 @@
 import {HttpClient} from '@actions/http-client';
+import * as core from '@actions/core';
 import {IAdoptAvailableVersions} from '../../src/distributions/adopt/models';
 import {
   AdoptDistribution,
@@ -12,6 +13,7 @@ import manifestData from '../data/adopt.json';
 
 describe('getAvailableVersions', () => {
   let spyHttpClient: jest.SpyInstance;
+  let spyError: jest.SpyInstance;
 
   beforeEach(() => {
     spyHttpClient = jest.spyOn(HttpClient.prototype, 'getJson');
@@ -20,6 +22,9 @@ describe('getAvailableVersions', () => {
       headers: {},
       result: []
     });
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => {});
   });
 
   afterEach(() => {

@@ -7,6 +7,7 @@ import {HttpClient} from '@actions/http-client';
 describe('findPackageForDownload', () => {
   let distribution: OracleDistribution;
   let spyDebug: jest.SpyInstance;
+  let spyError: jest.SpyInstance;
   let spyHttpClient: jest.SpyInstance;
 
   beforeEach(() => {
@@ -19,6 +20,9 @@ describe('findPackageForDownload', () => {
 
     spyDebug = jest.spyOn(core, 'debug');
     spyDebug.mockImplementation(() => {});
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => {});
   });
 
   afterEach(() => {
