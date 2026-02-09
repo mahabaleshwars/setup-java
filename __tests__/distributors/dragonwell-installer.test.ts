@@ -1,4 +1,5 @@
 import {HttpClient} from '@actions/http-client';
+import * as core from '@actions/core';
 import {DragonwellDistribution} from '../../src/distributions/dragonwell/installer';
 import * as utils from '../../src/util';
 
@@ -6,6 +7,7 @@ import manifestData from '../data/dragonwell.json';
 
 describe('getAvailableVersions', () => {
   let spyHttpClient: jest.SpyInstance;
+  let spyError: jest.SpyInstance;
   let spyUtilGetDownloadArchiveExtension: jest.SpyInstance;
 
   beforeEach(() => {
@@ -21,6 +23,9 @@ describe('getAvailableVersions', () => {
       'getDownloadArchiveExtension'
     );
     spyUtilGetDownloadArchiveExtension.mockReturnValue('tar.gz');
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -231,9 +236,7 @@ describe('getAvailableVersions', () => {
 
         await expect(
           distribution['findPackageForDownload'](jdkVersion)
-        ).rejects.toThrow(
-          `Couldn't find any satisfied version for the specified java-version: "${jdkVersion}" and architecture: "${arch}".`
-        );
+        ).rejects.toThrow(/Could not find satisfied version for/);
       }
     );
 

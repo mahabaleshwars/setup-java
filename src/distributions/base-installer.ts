@@ -291,4 +291,19 @@ export abstract class JavaBase {
         return this.architecture;
     }
   }
+
+  protected createVersionNotFoundError(
+    version: string,
+    availableVersions?: string[]
+  ): Error {
+    const availableOptionsMessage = availableVersions?.length
+      ? `\nAvailable versions: ${availableVersions.join(', ')}`
+      : '';
+
+    return new Error(
+      `Could not find satisfied version for '${version}' ` +
+        `(distribution: ${this.distribution}, package: ${this.packageType}, ` +
+        `architecture: ${this.architecture}).${availableOptionsMessage}`
+    );
+  }
 }

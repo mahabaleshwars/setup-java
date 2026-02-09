@@ -1,4 +1,5 @@
 import {HttpClient} from '@actions/http-client';
+import * as core from '@actions/core';
 import {JavaInstallerOptions} from '../../src/distributions/base-models';
 
 import {CorrettoDistribution} from '../../src/distributions/corretto/installer';
@@ -10,6 +11,7 @@ import manifestData from '../data/corretto.json';
 
 describe('getAvailableVersions', () => {
   let spyHttpClient: jest.SpyInstance;
+  let spyError: jest.SpyInstance;
   let spyGetDownloadArchiveExtension: jest.SpyInstance;
 
   beforeEach(() => {
@@ -23,6 +25,9 @@ describe('getAvailableVersions', () => {
       util,
       'getDownloadArchiveExtension'
     );
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -198,7 +203,7 @@ describe('getAvailableVersions', () => {
 
       await expect(
         distribution['findPackageForDownload'](version)
-      ).rejects.toThrow("Could not find satisfied version for SemVer '4'");
+      ).rejects.toThrow(/Could not find satisfied version for '4'/);
     });
 
     it.each([

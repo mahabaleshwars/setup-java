@@ -7,6 +7,7 @@ import {HttpClient} from '@actions/http-client';
 describe('findPackageForDownload', () => {
   let distribution: OracleDistribution;
   let spyDebug: jest.SpyInstance;
+  let spyError: jest.SpyInstance;
   let spyHttpClient: jest.SpyInstance;
 
   beforeEach(() => {
@@ -19,6 +20,13 @@ describe('findPackageForDownload', () => {
 
     spyDebug = jest.spyOn(core, 'debug');
     spyDebug.mockImplementation(() => {});
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it.each([
@@ -78,8 +86,6 @@ describe('findPackageForDownload', () => {
 
     const result = await distribution['findPackageForDownload'](input);
 
-    jest.restoreAllMocks();
-
     expect(result.version).toBe(expectedVersion);
     const osType = distribution.getPlatform();
     const archiveType = getDownloadArchiveExtension();
@@ -95,6 +101,25 @@ describe('findPackageForDownload', () => {
   ])(
     'defaults to os.arch(): %s mapped to distro arch: %s',
     async (osArch: string, distroArch: string) => {
+      // Mock HTTP client to avoid real network calls
+      // First call (latest) returns 404, second call (archive) returns 200
+      spyHttpClient = jest.spyOn(HttpClient.prototype, 'head');
+      spyHttpClient
+        .mockReturnValueOnce(
+          Promise.resolve({
+            message: {
+              statusCode: 404
+            }
+          })
+        )
+        .mockReturnValue(
+          Promise.resolve({
+            message: {
+              statusCode: 200
+            }
+          })
+        );
+
       jest
         .spyOn(os, 'arch')
         .mockReturnValue(osArch as ReturnType<typeof os.arch>);

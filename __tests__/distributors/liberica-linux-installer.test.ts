@@ -4,12 +4,14 @@ import {
   LibericaVersion
 } from '../../src/distributions/liberica/models';
 import {HttpClient} from '@actions/http-client';
+import * as core from '@actions/core';
 import os from 'os';
 
 import manifestData from '../data/liberica-linux.json';
 
 describe('getAvailableVersions', () => {
   let spyHttpClient: jest.SpyInstance;
+  let spyError: jest.SpyInstance;
 
   beforeEach(() => {
     spyHttpClient = jest.spyOn(HttpClient.prototype, 'getJson');
@@ -18,6 +20,9 @@ describe('getAvailableVersions', () => {
       headers: {},
       result: manifestData as LibericaVersion[]
     });
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -209,7 +214,7 @@ describe('findPackageForDownload', () => {
 
   it('should throw an error', async () => {
     await expect(distribution['findPackageForDownload']('18')).rejects.toThrow(
-      /Could not find satisfied version for semver */
+      /Could not find satisfied version for '18'/
     );
   });
 });

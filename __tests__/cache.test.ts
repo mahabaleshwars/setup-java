@@ -16,6 +16,7 @@ describe('dependency cache', () => {
   let spyInfo: jest.SpyInstance<void, Parameters<typeof core.info>>;
   let spyWarning: jest.SpyInstance<void, Parameters<typeof core.warning>>;
   let spyDebug: jest.SpyInstance<void, Parameters<typeof core.debug>>;
+  let spyError: jest.SpyInstance<void, Parameters<typeof core.error>>;
   let spySaveState: jest.SpyInstance<void, Parameters<typeof core.saveState>>;
 
   beforeEach(() => {
@@ -48,6 +49,9 @@ describe('dependency cache', () => {
 
     spyDebug = jest.spyOn(core, 'debug');
     spyDebug.mockImplementation(() => null);
+
+    spyError = jest.spyOn(core, 'error');
+    spyError.mockImplementation(() => null);
 
     spySaveState = jest.spyOn(core, 'saveState');
     spySaveState.mockImplementation(() => null);
