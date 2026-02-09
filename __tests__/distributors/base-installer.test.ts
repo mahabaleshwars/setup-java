@@ -245,6 +245,7 @@ describe('setupJava', () => {
   let spyTcFindAllVersions: jest.SpyInstance;
   let spyCoreDebug: jest.SpyInstance;
   let spyCoreInfo: jest.SpyInstance;
+  let spyCoreError: jest.SpyInstance;
   let spyCoreExportVariable: jest.SpyInstance;
   let spyCoreAddPath: jest.SpyInstance;
   let spyCoreSetOutput: jest.SpyInstance;
@@ -277,6 +278,9 @@ describe('setupJava', () => {
 
     spyCoreInfo = jest.spyOn(core, 'info');
     spyCoreInfo.mockImplementation(() => undefined);
+
+    spyCoreError = jest.spyOn(core, 'error');
+    spyCoreError.mockImplementation(() => undefined);
 
     spyCoreAddPath = jest.spyOn(core, 'addPath');
     spyCoreAddPath.mockImplementation(() => undefined);
