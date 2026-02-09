@@ -16,12 +16,7 @@ on:
       - '**.md'
 
   workflow_dispatch:
-    inputs:
-      run_ref:
-        description: "Branch, tag, or SHA to run validation against (e.g. main, releases/1.2, feature/foo)"
-        required: true
-        default: "main"
-        type: string
+    # No inputs needed - just select the branch in the UI
 
 jobs:
   call-basic-validation:
@@ -29,5 +24,3 @@ jobs:
     uses: actions/reusable-workflows/.github/workflows/basic-validation.yml@main
     with:
       node-version: '24.x'
-      # For push/PR runs this will fall back to the event ref; for manual runs it uses the input
-      ref: ${{ inputs.run_ref || github.ref }}
