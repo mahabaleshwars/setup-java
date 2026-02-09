@@ -30,4 +30,4 @@ jobs:
     with:
       node-version: '24.x'
       # For push/PR runs this will fall back to the event ref; for manual runs it uses the input
-      ref: ${{ github.event.inputs.run_ref || github.event.pull_request.head.sha || github.ref }}
+      ref: ${{ inputs.run_ref || github.ref }}
