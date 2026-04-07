@@ -120,7 +120,7 @@ steps:
 ```
 
 ### Oracle
-**NOTE:** Oracle Java SE Development Kit is only available for version 17 and later. Oracle JDK 17 versions up to 17.0.12 are provided under the NFTC license (free). Versions 17.0.13+ are under the OTN license (restricted). Pin to `java-version: '17.0.12'` or use JDK 21+ to stay on the free license.
+**NOTE:** Oracle Java SE Development Kit is only available for version 17 and later. Oracle JDK 17 versions up to 17.0.12 are provided under the NFTC license (free for commercial use). Versions 17.0.13+ are under the OTN license (restricted). Pin to `java-version: '17.0.12'` or use JDK 21+ to stay on the free license.
 
 ```yaml
 steps:
