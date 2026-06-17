@@ -179,7 +179,6 @@ steps:
 - name: Build with Maven
   run: mvn -B package --file pom.xml
 ```
-> **Note:** In addition to the local repository (`~/.m2/repository`), Maven distributions downloaded by the [Maven Wrapper](https://maven.apache.org/wrapper/) (`~/.m2/wrapper/dists`) are cached as well. The `.mvn/wrapper/maven-wrapper.properties` file is included in the cache key so the cache is invalidated whenever the wrapped Maven version changes.
 
 #### Caching sbt dependencies
 ```yaml
