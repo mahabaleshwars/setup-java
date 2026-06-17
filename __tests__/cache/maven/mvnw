@@ -15,6 +15,7 @@ if [ ! -d "$MAVEN_HOME" ]; then
   ZIP_FILE="$WRAPPER_DIR/$DIST_NAME.zip"
   curl -fsSL -o "$ZIP_FILE" "$DIST_URL"
   unzip -q -d "$WRAPPER_DIR" "$ZIP_FILE"
+  rm -f "$ZIP_FILE"
 fi
 
 exec "$MAVEN_HOME/bin/mvn" "$@"
