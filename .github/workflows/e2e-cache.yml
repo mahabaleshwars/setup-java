@@ -127,68 +127,6 @@ jobs:
             exit 1
           fi
           ls ~/.m2/wrapper/dists
-  maven-wrapper-save:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-15-intel, windows-latest, ubuntu-latest]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Run setup-java with the cache for maven
-        uses: ./
-        id: setup-java
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-          cache: maven
-      - name: Create files to cache using Maven Wrapper
-        run: |
-          ./mvnw verify
-          if [ ! -d ~/.m2/repository ]; then
-            echo "::error::The ~/.m2/repository directory does not exist unexpectedly"
-            exit 1
-          fi
-          if [ ! -d ~/.m2/wrapper/dists ]; then
-            echo "::error::The ~/.m2/wrapper/dists directory does not exist unexpectedly"
-            exit 1
-          fi
-  maven-wrapper-restore:
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
-        working-directory: __tests__/cache/maven-wrapper
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-15-intel, windows-latest, ubuntu-latest]
-    needs: maven-wrapper-save
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-      - name: Run setup-java with the cache for maven
-        uses: ./
-        id: setup-java
-        with:
-          distribution: 'adopt'
-          java-version: '11'
-          cache: maven
-      - name: Confirm that ~/.m2/repository directory has been made
-        run: |
-          if [ ! -d ~/.m2/repository ]; then
-            echo "::error::The ~/.m2/repository directory does not exist unexpectedly"
-            exit 1
-          fi
-          ls ~/.m2/repository
-      - name: Confirm that ~/.m2/wrapper/dists directory has been made
-        run: |
-          if [ ! -d ~/.m2/wrapper/dists ]; then
-            echo "::error::The ~/.m2/wrapper/dists directory does not exist unexpectedly"
-            exit 1
-          fi
-          ls ~/.m2/wrapper/dists
   sbt-save:
     runs-on: ${{ matrix.os }}
     defaults:
