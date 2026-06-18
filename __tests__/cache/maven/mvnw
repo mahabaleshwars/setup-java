@@ -1,14 +1,11 @@
 #!/bin/sh
-# Minimal Maven Wrapper for e2e testing - downloads Maven to ~/.m2/wrapper/dists/
 set -e
 
 WRAPPER_PROPERTIES="$(dirname "$0")/.mvn/wrapper/maven-wrapper.properties"
 DIST_URL=$(grep -E '^distributionUrl=' "$WRAPPER_PROPERTIES" | cut -d'=' -f2-)
 DIST_NAME=$(basename "$DIST_URL" .zip)
 WRAPPER_DIR="$HOME/.m2/wrapper/dists/$DIST_NAME"
-VERSION="${DIST_NAME#apache-maven-}"
-VERSION="${VERSION%-bin}"
-MAVEN_HOME="$WRAPPER_DIR/apache-maven-$VERSION"
+MAVEN_HOME="$WRAPPER_DIR/${DIST_NAME%-bin}"
 
 if [ ! -d "$MAVEN_HOME" ]; then
   mkdir -p "$WRAPPER_DIR"
