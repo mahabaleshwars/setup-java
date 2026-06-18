@@ -88,14 +88,6 @@ jobs:
             echo "::error::The ~/.m2/repository directory does not exist unexpectedly"
             exit 1
           fi
-      - name: Download Maven distribution through the Maven Wrapper
-        working-directory: __tests__/cache/maven
-        run: |
-          ./mvnw --version
-          if [ ! -d ~/.m2/wrapper/dists ]; then
-            echo "::error::The ~/.m2/wrapper/dists directory does not exist unexpectedly"
-            exit 1
-          fi
   maven-restore:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -120,13 +112,6 @@ jobs:
             exit 1
           fi
           ls ~/.m2/repository
-      - name: Confirm that ~/.m2/wrapper/dists directory has been restored
-        run: |
-          if [ ! -d ~/.m2/wrapper/dists ]; then
-            echo "::error::The ~/.m2/wrapper/dists directory does not exist unexpectedly"
-            exit 1
-          fi
-          ls ~/.m2/wrapper/dists
   sbt-save:
     runs-on: ${{ matrix.os }}
     defaults:
